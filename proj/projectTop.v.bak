@@ -1,0 +1,25 @@
+module projectTop(
+	input Clock, Resetn,
+	output xOut, yOut, colourOut, plotOut)
+	
+	control C0(
+		.Clock(Clock),
+		.Resetn(Resetn),
+		.DoneDrawBackground(DoneDrawBackground),
+		.DoneDrawCar(DoneDrawCar),
+		.draw_background(draw_background),
+		.draw_car(draw_car),
+		.plot(plotOut);
+		
+	datapath D0(
+		.Clock(Clock),
+		.Resetn(Resetn),
+		.draw_background(draw_background),
+		.draw_car(draw_car)
+		.colourToDisplay(colourOut),
+		.DoneDrawBackground(DoneDrawBackground),
+		.DoneDrawCar(DoneDrawCar),
+		.xOut(xOut),
+		.yOut(yOut));
+		
+endmodule

@@ -1,0 +1,151 @@
+module PS2_Call (
+	// Inputs
+//	CLOCK_50,
+//	Sw,
+//	Resetn,
+//	// Bidirectionals
+//	PS2_CLK,
+//	PS2_DAT,
+//	
+//	// Outputs
+//	signalStraight, signalRight, signalLeft
+	
+	input	CLOCK_50, input Resetn, inout	PS2_CLK, inout	PS2_DAT, output reg signalStraight, signalRight, signalLeft
+);
+
+/*****************************************************************************
+ *                           Parameter Declarations                          *
+ *****************************************************************************/
+
+ reg[3:0] current_state, next_state;
+ 
+	
+	localparam  E0 = 3'd0, //make
+					F0 = 3'd1, //break
+					WAIT = 3'd2,
+					LEFT = 3,
+					RIGHT = 4,
+					STRAIGHT = 5,
+					LEFT_BREAK = 6,
+					RIGHT_BREAK = 7,
+				   STRAIGHT_BREAK = 8;
+    
+    // Next state logic aka our state table
+    always@(*)
+    begin: state_table 
+		case (current_state)
+			E0: begin
+				if(ps2_key_data == 8'h75) 
+					next_state = STRAIGHT;
+				else if(ps2_key_data == 8'h75) 
+					next_state = LEFT;
+				else if(ps2_key_data == 8'h74) 
+					next_state = RIGHT;
+				else if (ps2_key_data == 8'h6B)
+					next_state = F0;
+			end
+			STRAIGHT: begin
+					next_state = WAIT;
+			end
+			WAIT: begin
+				if (ps2_key_data == 8'hE0)
+					next_state = E0;
+				else if (ps2_key_data == 8'hF0)
+					next_state = F0;
+				else next_state = WAIT;
+			end
+			F0: begin
+				if (ps2_key_data == 8'hE0)
+					next_state = E0;
+				else
+					next_state = WAIT;
+			end
+			LEFT: begin
+				next_state = WAIT;
+			end
+			RIGHT: begin
+				next_state = WAIT;
+			end
+		endcase
+	end
+	
+	always @(*) begin
+	
+		case(current_state)
+		
+			STRAIGHT: signalStraight = 1'b1;
+			LEFT: signalLeft = 1'b1;
+			RIGHT: signalRight = 1'b1;
+			E0: ;
+			WAIT: ;
+			F0: ;
+			default: begin
+				signalStraight = 1'b0;
+				signalLeft = 1'b0;
+				signalRight = 1'b0;
+			end
+		end
+	end
+		
+	always@(posedge CLOCK_50)
+    begin: state_FFs
+        if(!Resetn)
+           current_state <= WAIT;
+        else
+            current_state <= next_state;
+    end // state_FFS
+	
+	
+/*****************************************************************************
+ *                             Port Declarations                             *
+ *****************************************************************************/
+
+// Inputs
+	
+
+	/*****************************************************************************
+	 *                 Internal Wires and Registers Declarations                 *
+	 *****************************************************************************/
+
+	// Internal Wires
+	wire		[7:0]	ps2_key_data;
+	wire				ps2_key_pressed;
+
+	// Internal Registers
+	reg			[7:0]	last_data_received;
+	
+	// State Machine Registers
+
+	/*****************************************************************************
+	 *                             Sequential Logic                              *
+	 *****************************************************************************/
+
+	always @(posedge CLOCK_50)
+	begin
+		if (!Resetn)
+			last_data_received <= 8'h00;
+		else if (ps2_key_pressed == 1'b1 && Resetn)
+			last_data_received <= ps2_key_data;
+	end
+
+
+	/*****************************************************************************
+	 *                              Internal Modules                             *
+	 *****************************************************************************/
+
+	PS2_Controller PS2 (
+		// Inputs
+		.CLOCK_50				(CLOCK_50),
+		.reset				   (!Resetn),
+
+		// Bidirectionals
+		.PS2_CLK			(PS2_CLK),
+		.PS2_DAT			(PS2_DAT),
+
+		// Outputs
+		.received_data		(ps2_key_data),
+		.received_data_en	(ps2_key_pressed)
+	);
+
+
+	endmodule

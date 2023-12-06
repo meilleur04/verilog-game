@@ -1,0 +1,17 @@
+module DelayCounter(countDownNum, Clock, simReset, RDOut);
+
+	input Clock, simReset;
+	input[19:0] countDownNum;
+	output reg[19:0] RDOut;
+	
+	always @ (posedge Clock)
+		begin
+			if (simReset)
+				RDOut <= 0;
+			else if (RDOut == 0)
+				RDOut <= countDownNum;
+			else
+				RDOut <= RDOut - 1;
+		end
+
+endmodule

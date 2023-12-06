@@ -1,0 +1,78 @@
+module datapath(
+	input Clock, draw_background, draw_car
+	input[6:0] colourToDisplay,
+	output DoneDrawBackground, DoneDrawCar);
+	
+	reg[12:0] address = 13'b0000000000000;
+	wire[5:0] carColourToDisplay;
+	wire[5:0] backgroundColourToDisplay;
+
+	reg[8:0] currentYPosition;
+	reg[9:0] currentXPosition;
+
+	localparam orientRight = 0,
+				  orientUpRight = 1,
+				  orientUp = 2,
+				  orientUpLeft = 3,
+				  orientLeft = 4,
+				  orientDownLeft = 5,
+				  orientDown = 6,
+				  orientDownRight = 7;
+	
+	// only being used to read, not write
+	car_sprite_atlas(
+		.address(address),
+		.clock(Clock), // may also use enable
+		.data(6'b000000),
+		.wren(1'b0), 
+		.q(colourToDisplay));
+		
+	trackRam(
+		.address(address),
+		.clock(Clock), // may also use enable
+		.data(6'b000000),
+		.wren(1'b0), 
+		.q(backgroundColourToDisplay));
+	
+	always@(posedge Clock) begin
+		if(draw_background) begin
+			
+		end
+		
+		else if(draw_car) begin
+
+		// address will change depending on the current sprite
+		// will most likely have local parameters defining the different 
+		// sprite orientations and choosing the correct starting position
+		// based on it (parameters from 0-7 choosing left, down, up-right, etc.
+	
+		// may be an issue with drawing top left corner again
+
+			if(colourToDisplay == 6'b010001)
+				colourOut = backgroundColourToDisplay;
+				xOut = currentXPosition + xCount;
+				yOut = currentYPosition + yCount;
+			end
+			else begin
+				colourOut = carColourToDisplay //colour of sprite at current position
+				xOut = currentXPosition + xCount;
+				yOut = currentYPosition + yCount;
+			end
+			if(xCount == 31 && yCount == 31) begin
+				xCount = 0;
+				yCount = 0;
+				// maybe do something with address
+				DoneDraw = 1'b1;
+			end
+			else if(xCount == 31) begin
+				xCount = 0;
+				yCount = yCount + 1;
+				address = address + 1;
+			end
+			else begin
+				xCount = xCount + 1;
+				address = address + 1;
+			end
+		end
+		
+	end	

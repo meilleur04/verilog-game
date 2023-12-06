@@ -1,0 +1,10 @@
+
+
+C:/Users/gurma/Desktop/audiov/Audio_Clock.v
+
+Dec 02 09PM:56:30>: Error in CNX file format.
+
+Error messages are listed in file
+C:/Users/gurma/Desktop/audiov/Audio_Clock.cnxerr.
+
+Can't create the custom megafunction variation file(s)

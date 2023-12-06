@@ -1,0 +1,12 @@
+module orientationControl(
+	input left, right,
+	input[3:0] currentOrientation,
+	output[3:0] nextOrientation);
+	
+
+				  
+	if(left) 			assign nextOrientation = currentOrientation - 1;
+	else if(right) 	assign nextOrientation = currentOrientation + 1;
+	else 					assign nextOrientation = currentOrientation;
+	
+endmodule

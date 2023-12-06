@@ -1,0 +1,17 @@
+Analysis & Synthesis Status : Successful - Tue Dec 05 14:38:04 2023
+Quartus Prime Version : 18.0.0 Build 614 04/24/2018 SJ Standard Edition
+Revision Name : CarRacing
+Top-level Entity Name : fill
+Family : Cyclone V
+Logic utilization (in ALMs) : N/A
+Total registers : 639
+Total pins : 68
+Total virtual pins : 0
+Total block memory bits : 2,998,272
+Total DSP Blocks : 0
+Total HSSI RX PCSs : 0
+Total HSSI PMA RX Deserializers : 0
+Total HSSI TX PCSs : 0
+Total HSSI PMA TX Serializers : 0
+Total PLLs : 2
+Total DLLs : 0

@@ -1,0 +1,46 @@
+module control(
+	input Clock, Resetn, Done_Reset,
+	output draw_background, draw_car);
+	
+	reg[2:0] current_state, next_state;
+    
+   localparam  IDLE = 0,
+					DRAW_BACKGROUND  = 1,
+					DRAW_CAR = 2;
+    
+    // Next state logic aka our state table
+    always@(*)
+    begin: state_table 
+            case (current_state)
+                IDLE: next_state = IDLE; // Change to beginning the driving
+					 DRAW_BACKGROUND: next_state = DoneDrawBackground ? DRAW_CAR : DRAW_BACKGROUND;
+					 DRAW_CAR: next_state = DoneDrawCar ? IDLE : DRAW_CAR;
+				endcase
+    end // state_table
+
+    // Output logic aka all of our datapath control signals
+    always @(*)
+    begin: enable_signals
+	 
+		  draw_background = 1'b0;
+		  draw_car = 1'b0;
+	 
+        case (current_state)
+            DRAW_BACKGROUND:
+					draw_background = 1'b1;
+				DRAW_CAR:
+					draw_car = 1'b1;
+				
+        endcase
+    end // enable_signals
+   
+    // current_state registers
+    always@(posedge Clock)
+    begin: state_FFs
+        if(!Resetn)
+           current_state <= DRAW_BACKGROUND;
+        else
+            current_state <= next_state;
+    end // state_FFS
+	 
+endmodule
